@@ -1,40 +1,35 @@
+const yargs = require('yargs/yargs')
+const { hideBin } = require('yargs/helpers')
+const arr = hideBin(process.argv);
+const { argv } = yargs(arr).option("id", {
+    type: "string"
+});
 const contactsOperations = require("./contacts");
-const {v4} = require("uuid");
 
-
-const invokeAction = async ({ action, id, data }) => {
+async function invokeAction ({ action, id, name, email, phone }) {
     switch (action) {
-        // case "list":
-        //     const list = await contactsOperations.listContacts();
-        //     // console.log(data);
-        //     break;
-        // case "getById":
-        //     const contact = await contactsOperations.getContactById(id);
-        //     if (!contact) {
-        //         throw new Error("not found!")
-        //     }
-        //     // console.log(contact);
-        //     break;
-        // case "addContact":
-        //     const newContact = await contactsOperations.addContact(data);
-        //     console.log(newContact);
-        //     break;
-        case "removeContact":
+        case "list":
+            const getList = await contactsOperations.listContacts();
+            console.table(getList);
+            break;
+        case "get":
+            const contact = await contactsOperations.getContactById(id);
+            if (!contact) {
+                throw new Error("not found!")
+            };
+            console.log(contact);
+            break;
+        case "add":
+            const newContact = await contactsOperations.addContact(name, email, phone);
+            console.log(newContact);
+            break;
+        case "remove":
             const removeContact = await contactsOperations.removeContact(id);
-            console.log(removeContact);
+            console.log(removeContact)
             break;
         default:
-            console.log("Unknown action")
+            console.warn('\x1B[31m Unknown action type!');
     }
 }
-// const id = "1"
-// const newContact = {
-//     id: v4(),
-//     name: "name",
-//     email: "email",
-//     phone: "phone",
-// };
 
-invokeAction({ action: "removeContact", id });
-// invokeAction({ action: "getById", id});
-// invokeAction({action : "getContactById", id});
+invokeAction(argv);
